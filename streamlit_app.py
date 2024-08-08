@@ -6,7 +6,7 @@ from io import BytesIO
 import base64
 
 # Set page config at the very beginning of your script
-st.set_page_config(page_title="CMDSPACE", page_icon="🏛️", layout="wide")
+st.set_page_config(page_title="2주뒤에 뵙겠습니다", page_icon="🏛️", layout="wide")
 
 # Constants and configurations
 CONFIG = {
@@ -19,74 +19,90 @@ CONFIG = {
     "home_page_image": "https://example.com/cmdspace_logo.png",
 }
 
-# Custom CSS for Apple-style UI with full-width layout
-# 스타일을 수정하거나 새로운 클래스를 추가하려면 이 부분을 편집하세요
-apple_style_css = """
+# Custom CSS for light/dark mode support
+custom_css = """
 <style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        background-color: #f5f5f7;
-        color: #1d1d1f;
+    :root {
+        --sidebar-bg: #ece7df;
+        --main-bg: #f2eee9;
+        --font-color: #71554e;
+        --selected-color: #e99897;
+        --hover-color: rgba(233, 152, 151, 0.2);
     }
+
+    [data-theme="dark"] {
+        --sidebar-bg: #100f0f;
+        --main-bg: #1c1b1a;
+        --font-color: #cfcec4;
+        --selected-color: #f38ba8;
+        --hover-color: rgba(243, 139, 168, 0.2);
+    }
+
     .stApp {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .main .block-container {
+        background-color: var(--main-bg);
         padding: 2rem;
+        border-radius: 10px;
     }
-    .main-content {
-        max-width: 1200px;
-        margin: 0 auto;
+
+    .stSidebar .sidebar-content {
+        background-color: var(--sidebar-bg);
     }
-    h1 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 1.5rem;
+
+    body {
+        color: var(--font-color);
+        background-color: var(--main-bg);
     }
-    h2 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
+
+    .nav-link {
+        color: var(--font-color) !important;
+        font-size: 1rem !important;
+        transition: all 0.2s ease;
     }
+
+    .nav-link:hover {
+        background-color: var(--hover-color) !important;
+    }
+
+    .nav-link.active {
+        background-color: var(--selected-color) !important;
+        color: var(--main-bg) !important;
+        font-weight: bold !important;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--font-color);
+    }
+
     .stButton > button {
-        background-color: #0071e3;
-        color: white;
+        background-color: var(--selected-color);
+        color: var(--main-bg);
         font-size: 1rem;
         padding: 0.5rem 1rem;
         border-radius: 20px;
         border: none;
-        transition: background-color 0.3s ease;
+        transition: opacity 0.3s ease;
     }
+
     .stButton > button:hover {
-        background-color: #0077ed;
+        opacity: 0.8;
     }
+
     .stTextInput > div > div > input,
     .stSelectbox > div > div > select,
     .stTextArea > div > div > textarea {
-        border-radius: 10px;
-        border: 1px solid #d2d2d7;
-        padding: 0.5rem;
-        font-size: 1rem;
+        background-color: var(--main-bg);
+        color: var(--font-color);
+        border-color: var(--selected-color);
     }
+
     @media (max-width: 768px) {
-        .stApp {
+        .main .block-container {
             padding: 1rem;
         }
-        h1 {
-            font-size: 2rem;
-        }
-        h2 {
-            font-size: 1.5rem;
-        }
-    }
-        /* Your existing CSS styles here */
-
-    /* Custom styles for option menu */
-    .nav-link {
-        font-size: 1.2rem !important;
-        padding: 0.5rem 1rem !important;
-    }
-    .nav-link.active {
-        background-color: #0071e3 !important;
-        color: white !important;
-        font-weight: bold !important;
     }
 </style>
 """
@@ -98,11 +114,7 @@ def load_image(image_path):
     return f"data:image/png;base64,{encoded_string}"
 
 # Pages
-# 각 페이지 함수는 해당 페이지의 내용을 정의합니다
-# 새로운 페이지를 추가하려면 아래 형식을 따라 새로운 함수를 만드세요
-
 def home_page():
-    st.markdown('<div class="main-content">', unsafe_allow_html=True)
     st.title("커맨드스페이스 AI 서비스")
     st.markdown("""
     ## 환영합니다
@@ -110,63 +122,53 @@ def home_page():
     이 앱은 구요한 교수가 제공하는 지식관리 및 생성형 AI 활용 서비스입니다.
     """)
     st.image(CONFIG["home_page_image"], use_column_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
-def openai_page():
-    st.markdown('<div class="main-content">', unsafe_allow_html=True)
-    st.title("OpenAI 도구")
-    selected_model = st.selectbox("OpenAI 모델 선택", list(CONFIG["openai_models"].keys()))
-    st.write(f"모델 설명: {CONFIG['openai_models'][selected_model]}")
-    prompt = st.text_area("프롬프트 입력:", height=200)
-    if st.button("텍스트 생성"):
-        if prompt:
-            # OpenAI API 호출 로직 구현
-            # TODO: OpenAI API 연동 코드 추가
-            st.write("생성된 텍스트:")
-            st.write("여기에 생성된 텍스트가 표시됩니다.")
-        else:
-            st.warning("프롬프트를 입력해주세요.")
-    st.markdown('</div>', unsafe_allow_html=True)
+def generative_ai_page(sub_option):
+    st.title("Generative AI")
+    if sub_option == "ChatGPT":
+        st.write("ChatGPT 관련 내용을 여기에 추가하세요.")
+    elif sub_option == "DALL-E":
+        st.write("DALL-E 관련 내용을 여기에 추가하세요.")
+    elif sub_option == "Midjourney":
+        st.write("Midjourney 관련 내용을 여기에 추가하세요.")
 
-def deepl_page():
-    st.markdown('<div class="main-content">', unsafe_allow_html=True)
-    st.title("DeepL 번역")
-    text = st.text_area("번역할 텍스트 입력:", height=200)
-    target_lang = st.selectbox("대상 언어 선택:", CONFIG["target_languages"])
-    if st.button("번역"):
-        if text:
-            # DeepL API 호출 로직 구현
-            # TODO: DeepL API 연동 코드 추가
-            st.write("번역된 텍스트:")
-            st.write("여기에 번역된 텍스트가 표시됩니다.")
-        else:
-            st.warning("번역할 텍스트를 입력해주세요.")
-    st.markdown('</div>', unsafe_allow_html=True)
+def obsidian_page(sub_option):
+    st.title("Obsidian")
+    if sub_option == "기초":
+        st.write("Obsidian 기초 사용법을 여기에 추가하세요.")
+    elif sub_option == "플러그인":
+        st.write("Obsidian 플러그인 관련 내용을 여기에 추가하세요.")
+    elif sub_option == "활용 사례":
+        st.write("Obsidian 활용 사례를 여기에 추가하세요.")
 
-def voc_analysis_page():
-    st.markdown('<div class="main-content">', unsafe_allow_html=True)
-    st.title("고객의 소리(VOC) 분석")
-    voc_data = st.text_area("VOC 데이터 입력:", height=300)
-    if st.button("분석"):
-        if voc_data:
-            # VOC 분석 로직 구현
-            # TODO: VOC 분석 알고리즘 구현
-            st.subheader("분석 결과:")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("### 주요 문제점")
-                st.write("1. 문제점 1")
-                st.write("2. 문제점 2")
-            with col2:
-                st.markdown("### 개선 방안")
-                st.write("1. 개선 방안 1")
-                st.write("2. 개선 방안 2")
-        else:
-            st.warning("VOC 데이터를 입력해주세요.")
-    st.markdown('</div>', unsafe_allow_html=True)
+def research_page(sub_option):
+    st.title("Research")
+    if sub_option == "방법론":
+        st.write("연구 방법론에 대한 내용을 여기에 추가하세요.")
+    elif sub_option == "논문 작성":
+        st.write("논문 작성 가이드를 여기에 추가하세요.")
+    elif sub_option == "데이터 분석":
+        st.write("연구 데이터 분석 방법을 여기에 추가하세요.")
+
+def knowledge_management_page(sub_option):
+    st.title("Knowledge Management")
+    if sub_option == "개념 및 이론":
+        st.write("지식 관리의 개념과 이론을 여기에 추가하세요.")
+    elif sub_option == "도구 소개":
+        st.write("지식 관리 도구 소개를 여기에 추가하세요.")
+    elif sub_option == "실践 사례":
+        st.write("지식 관리 실천 사례를 여기에 추가하세요.")
+
+def cmds_lab_page(sub_option):
+    st.title("CMDS Lab")
+    if sub_option == "연구 주제":
+        st.write("CMDS Lab의 주요 연구 주제를 여기에 추가하세요.")
+    elif sub_option == "팀 소개":
+        st.write("CMDS Lab 팀원 소개를 여기에 추가하세요.")
+    elif sub_option == "발표자료":
+        st.write("CMDS Lab의 주요 발표 자료를 여기에 추가하세요.")
 
 def contact_page():
-    st.markdown('<div class="main-content">', unsafe_allow_html=True)
     st.title("연락처")
     st.write("구요한 교수에게 연락하실 수 있는 방법입니다:")
     
@@ -179,41 +181,122 @@ def contact_page():
         st.markdown("### 기타")
         st.markdown("- 이메일: professor@example.com")
         st.markdown("- 전화: 010-1234-5678")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# 새로운 페이지를 추가하려면 아래와 같은 형식의 함수를 만드세요:
-#"""
-#def new_page():
-#    st.markdown('<div class="main-content">', unsafe_allow_html=True)
-#    st.title("새로운 페이지 제목")
-#    # 페이지 내용 구현
-#    st.markdown('</div>', unsafe_allow_html=True)
-#"""
 
 # Main app
-
 def main():
-    # Sidebar navigation using selectbox
-    page = st.sidebar.selectbox(
-        "페이지 선택",
-        ["홈", "OpenAI", "DeepL", "VOC 분석", "연락처"]
-    )
+    st.markdown(custom_css, unsafe_allow_html=True)
+
+    # Detect the theme and set the appropriate data attribute
+    if st.get_option("theme.base") == "light":
+        st.markdown('<div data-theme="light">', unsafe_allow_html=True)
+    else:
+        st.markdown('<div data-theme="dark">', unsafe_allow_html=True)
+
+    with st.sidebar:
+        st.title("2주뒤에 뵙겠습니다")
+        
+        selected = option_menu(
+            menu_title="CMDSPACE",
+            options=["Home", "Generative AI", "Obsidian", "Research", "Knowledge Management", "CMDS Lab", "Contact"],
+            icons=['house-door', 'robot', 'journal-text', 'search', 'diagram-3', 'laptop', 'envelope'],
+            menu_icon="command",
+            default_index=0,
+            styles={
+                "container": {"padding": "5!important", "background-color": "transparent"},
+                "icon": {"color": "inherit", "font-size": "20px"}, 
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px"},
+                "nav-link-selected": {"background-color": "transparent"},
+            }
+        )
+
+        # Submenus
+        if selected == "Generative AI":
+            ai_option = option_menu(
+                menu_title=None,
+                options=["ChatGPT", "DALL-E", "Midjourney"],
+                icons=['chat-dots', 'image', 'palette'],
+                default_index=0,
+                styles={
+                    "container": {"padding": "0!important", "background-color": "transparent"},
+                    "icon": {"color": "inherit", "font-size": "16px"}, 
+                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
+                    "nav-link-selected": {"background-color": "transparent"},
+                }
+            )
+        elif selected == "Obsidian":
+            obsidian_option = option_menu(
+                menu_title=None,
+                options=["기초", "플러그인", "활용 사례"],
+                icons=['book', 'plug', 'lightbulb'],
+                default_index=0,
+                styles={
+                    "container": {"padding": "0!important", "background-color": "transparent"},
+                    "icon": {"color": "inherit", "font-size": "16px"}, 
+                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
+                    "nav-link-selected": {"background-color": "transparent"},
+                }
+            )
+        elif selected == "Research":
+            research_option = option_menu(
+                menu_title=None,
+                options=["방법론", "논문 작성", "데이터 분석"],
+                icons=['clipboard-data', 'file-text', 'graph-up'],
+                default_index=0,
+                styles={
+                    "container": {"padding": "0!important", "background-color": "transparent"},
+                    "icon": {"color": "inherit", "font-size": "16px"}, 
+                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
+                    "nav-link-selected": {"background-color": "transparent"},
+                }
+            )
+        elif selected == "Knowledge Management":
+            km_option = option_menu(
+                menu_title=None,
+                options=["개념 및 이론", "도구 소개", "실践 사례"],
+                icons=['book', 'tools', 'check-circle'],
+                default_index=0,
+                styles={
+                    "container": {"padding": "0!important", "background-color": "transparent"},
+                    "icon": {"color": "inherit", "font-size": "16px"}, 
+                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
+                    "nav-link-selected": {"background-color": "transparent"},
+                }
+            )
+        elif selected == "CMDS Lab":
+            lab_option = option_menu(
+                menu_title=None,
+                options=["연구 주제", "팀 소개", "발표자료"],
+                icons=['clipboard', 'people', 'file-earmark-slides'],
+                default_index=0,
+                styles={
+                    "container": {"padding": "0!important", "background-color": "transparent"},
+                    "icon": {"color": "inherit", "font-size": "16px"}, 
+                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
+                    "nav-link-selected": {"background-color": "transparent"},
+                }
+            )
 
     # Page routing
-    if page == "홈":
-        st.title("홈 페이지")
-    elif page == "OpenAI":
-        st.title("OpenAI 페이지")
-    elif page == "DeepL":
-        st.title("DeepL 페이지")
-    elif page == "VOC 분석":
-        st.title("VOC 분석 페이지")
-    elif page == "연락처":
-        st.title("연락처 페이지")
+    if selected == "Home":
+        home_page()
+    elif selected == "Generative AI":
+        generative_ai_page(ai_option)
+    elif selected == "Obsidian":
+        obsidian_page(obsidian_option)
+    elif selected == "Research":
+        research_page(research_option)
+    elif selected == "Knowledge Management":
+        knowledge_management_page(km_option)
+    elif selected == "CMDS Lab":
+        cmds_lab_page(lab_option)
+    elif selected == "Contact":
+        contact_page()
 
-    # Footer
     st.sidebar.markdown("---")
     st.sidebar.markdown("© 2024 CMDSPACE by Yohan Koo")
+
+    # Close the theme div
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
