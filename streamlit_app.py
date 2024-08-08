@@ -191,31 +191,25 @@ def contact_page():
 #"""
 
 # Main app
-def main():
-    st.markdown(apple_style_css, unsafe_allow_html=True)
 
-    # Sidebar navigation using streamlit_option_menu
-    with st.sidebar:
-        st.title("CMDSPACE")
-        selected = option_menu(
-            menu_title=None,
-            options=["홈", "OpenAI", "DeepL", "VOC 분석", "연락처"],
-            icons=['house', 'cloud', 'translate', 'chat-square-text', 'person-lines-fill'],
-            menu_icon="cast",
-            default_index=0,
-        )
+def main():
+    # Sidebar navigation using selectbox
+    page = st.sidebar.selectbox(
+        "페이지 선택",
+        ["홈", "OpenAI", "DeepL", "VOC 분석", "연락처"]
+    )
 
     # Page routing
-    if selected == "홈":
-        home_page()
-    elif selected == "OpenAI":
-        openai_page()
-    elif selected == "DeepL":
-        deepl_page()
-    elif selected == "VOC 분석":
-        voc_analysis_page()
-    elif selected == "연락처":
-        contact_page()
+    if page == "홈":
+        st.title("홈 페이지")
+    elif page == "OpenAI":
+        st.title("OpenAI 페이지")
+    elif page == "DeepL":
+        st.title("DeepL 페이지")
+    elif page == "VOC 분석":
+        st.title("VOC 분석 페이지")
+    elif page == "연락처":
+        st.title("연락처 페이지")
 
     # Footer
     st.sidebar.markdown("---")
