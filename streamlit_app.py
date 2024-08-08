@@ -27,7 +27,7 @@ custom_css = """
         --main-bg: #f2eee9;
         --font-color: #71554e;
         --selected-color: #e99897;
-        --hover-color: rgba(233, 152, 151, 0.2);
+        --hover-color: rgba(233, 152, 151, 0.5);
     }
 
     [data-theme="dark"] {
@@ -35,7 +35,7 @@ custom_css = """
         --main-bg: #1c1b1a;
         --font-color: #cfcec4;
         --selected-color: #f38ba8;
-        --hover-color: rgba(243, 139, 168, 0.2);
+        --hover-color: rgba(243, 139, 168, 0.5);
     }
 
     .stApp {
@@ -55,15 +55,18 @@ custom_css = """
     .nav-link {
         color: var(--font-color) !important;
         background-color: transparent;
+        transition: all 0.3s ease !important;
     }
 
     .nav-link:hover {
         background-color: var(--hover-color) !important;
+        color: var(--main-bg) !important;
     }
 
     .nav-link.active {
         background-color: var(--selected-color) !important;
         color: var(--main-bg) !important;
+        font-weight: bold !important;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -102,49 +105,24 @@ def home_page():
     st.image(CONFIG["home_page_image"], use_column_width=True)
 
 def generative_ai_page(sub_option):
-    st.title("Generative AI")
-    if sub_option == "ChatGPT":
-        st.write("ChatGPT 관련 내용을 여기에 추가하세요.")
-    elif sub_option == "DALL-E":
-        st.write("DALL-E 관련 내용을 여기에 추가하세요.")
-    elif sub_option == "Midjourney":
-        st.write("Midjourney 관련 내용을 여기에 추가하세요.")
+    st.title(f"Generative AI - {sub_option}")
+    st.write(f"{sub_option} 관련 내용을 여기에 추가하세요.")
 
 def obsidian_page(sub_option):
-    st.title("Obsidian")
-    if sub_option == "기초":
-        st.write("Obsidian 기초 사용법을 여기에 추가하세요.")
-    elif sub_option == "플러그인":
-        st.write("Obsidian 플러그인 관련 내용을 여기에 추가하세요.")
-    elif sub_option == "활용 사례":
-        st.write("Obsidian 활용 사례를 여기에 추가하세요.")
+    st.title(f"Obsidian - {sub_option}")
+    st.write(f"{sub_option} 관련 내용을 여기에 추가하세요.")
 
 def research_page(sub_option):
-    st.title("Research")
-    if sub_option == "방법론":
-        st.write("연구 방법론에 대한 내용을 여기에 추가하세요.")
-    elif sub_option == "논문 작성":
-        st.write("논문 작성 가이드를 여기에 추가하세요.")
-    elif sub_option == "데이터 분석":
-        st.write("연구 데이터 분석 방법을 여기에 추가하세요.")
+    st.title(f"Research - {sub_option}")
+    st.write(f"{sub_option} 관련 내용을 여기에 추가하세요.")
 
 def knowledge_management_page(sub_option):
-    st.title("Knowledge Management")
-    if sub_option == "개념 및 이론":
-        st.write("지식 관리의 개념과 이론을 여기에 추가하세요.")
-    elif sub_option == "도구 소개":
-        st.write("지식 관리 도구 소개를 여기에 추가하세요.")
-    elif sub_option == "실천 사례":
-        st.write("지식 관리 실천 사례를 여기에 추가하세요.")
+    st.title(f"Knowledge Management - {sub_option}")
+    st.write(f"{sub_option} 관련 내용을 여기에 추가하세요.")
 
 def cmds_lab_page(sub_option):
-    st.title("CMDS Lab")
-    if sub_option == "연구 주제":
-        st.write("CMDS Lab의 주요 연구 주제를 여기에 추가하세요.")
-    elif sub_option == "팀 소개":
-        st.write("CMDS Lab 팀원 소개를 여기에 추가하세요.")
-    elif sub_option == "발표자료":
-        st.write("CMDS Lab의 주요 발표 자료를 여기에 추가하세요.")
+    st.title(f"CMDS Lab - {sub_option}")
+    st.write(f"{sub_option} 관련 내용을 여기에 추가하세요.")
 
 def contact_page():
     st.title("연락처")
@@ -175,98 +153,74 @@ def main():
         
         selected = option_menu(
             menu_title="CMDSPACE",
-            options=["Home", "Generative AI", "Obsidian", "Research", "Knowledge Management", "CMDS Lab", "Contact"],
+            options=[
+                "Home",
+                {
+                    "Generative AI": [
+                        "ChatGPT",
+                        "DALL-E",
+                        "Midjourney"
+                    ]
+                },
+                {
+                    "Obsidian": [
+                        "기초",
+                        "플러그인",
+                        "활용 사례"
+                    ]
+                },
+                {
+                    "Research": [
+                        "방법론",
+                        "논문 작성",
+                        "데이터 분석"
+                    ]
+                },
+                {
+                    "Knowledge Management": [
+                        "개념 및 이론",
+                        "도구 소개",
+                        "실천 사례"
+                    ]
+                },
+                {
+                    "CMDS Lab": [
+                        "연구 주제",
+                        "팀 소개",
+                        "발표자료"
+                    ]
+                },
+                "Contact"
+            ],
             icons=['house-door', 'robot', 'journal-text', 'search', 'diagram-3', 'laptop', 'envelope'],
-            menu_icon="command",
             default_index=0,
             styles={
                 "container": {"padding": "5!important", "background-color": "transparent"},
                 "icon": {"color": "inherit", "font-size": "20px"}, 
-                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px"},
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "padding": "10px"},
                 "nav-link-selected": {"background-color": "transparent"},
             }
         )
 
-    # Submenus
-    if selected == "Generative AI":
-        with st.sidebar:
-            ai_option = option_menu(
-                menu_title=None,
-                options=["ChatGPT", "DALL-E", "Midjourney"],
-                icons=['chat-dots', 'image', 'palette'],
-                default_index=0,
-                styles={
-                    "container": {"padding": "0!important", "background-color": "transparent"},
-                    "icon": {"color": "inherit", "font-size": "16px"}, 
-                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
-                    "nav-link-selected": {"background-color": "transparent"},
-                }
-            )
-        generative_ai_page(ai_option)
-    elif selected == "Obsidian":
-        with st.sidebar:
-            obsidian_option = option_menu(
-                menu_title=None,
-                options=["기초", "플러그인", "활용 사례"],
-                icons=['book', 'plug', 'lightbulb'],
-                default_index=0,
-                styles={
-                    "container": {"padding": "0!important", "background-color": "transparent"},
-                    "icon": {"color": "inherit", "font-size": "16px"}, 
-                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
-                    "nav-link-selected": {"background-color": "transparent"},
-                }
-            )
-        obsidian_page(obsidian_option)
-    elif selected == "Research":
-        with st.sidebar:
-            research_option = option_menu(
-                menu_title=None,
-                options=["방법론", "논문 작성", "데이터 분석"],
-                icons=['clipboard-data', 'file-text', 'graph-up'],
-                default_index=0,
-                styles={
-                    "container": {"padding": "0!important", "background-color": "transparent"},
-                    "icon": {"color": "inherit", "font-size": "16px"}, 
-                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
-                    "nav-link-selected": {"background-color": "transparent"},
-                }
-            )
-        research_page(research_option)
-    elif selected == "Knowledge Management":
-        with st.sidebar:
-            km_option = option_menu(
-                menu_title=None,
-                options=["개념 및 이론", "도구 소개", "실천 사례"],
-                icons=['book', 'tools', 'check-circle'],
-                default_index=0,
-                styles={
-                    "container": {"padding": "0!important", "background-color": "transparent"},
-                    "icon": {"color": "inherit", "font-size": "16px"}, 
-                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
-                    "nav-link-selected": {"background-color": "transparent"},
-                }
-            )
-        knowledge_management_page(km_option)
-    elif selected == "CMDS Lab":
-        with st.sidebar:
-            lab_option = option_menu(
-                menu_title=None,
-                options=["연구 주제", "팀 소개", "발표자료"],
-                icons=['clipboard', 'people', 'file-earmark-slides'],
-                default_index=0,
-                styles={
-                    "container": {"padding": "0!important", "background-color": "transparent"},
-                    "icon": {"color": "inherit", "font-size": "16px"}, 
-                    "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px", "padding": "5px 10px"},
-                    "nav-link-selected": {"background-color": "transparent"},
-                }
-            )
-        cmds_lab_page(lab_option)
-    elif selected == "Home":
-        home_page()
-    elif selected == "Contact":
-        contact_page()
+    # Page routing based on selection
+    if isinstance(selected, dict):
+        main_menu = list(selected.keys())[0]
+        sub_menu = selected[main_menu]
+        if main_menu == "Generative AI":
+            generative_ai_page(sub_menu)
+        elif main_menu == "Obsidian":
+            obsidian_page(sub_menu)
+        elif main_menu == "Research":
+            research_page(sub_menu)
+        elif main_menu == "Knowledge Management":
+            knowledge_management_page(sub_menu)
+        elif main_menu == "CMDS Lab":
+            cmds_lab_page(sub_menu)
+    else:
+        if selected == "Home":
+            home_page()
+        elif selected == "Contact":
+            contact_page()
 
     st.sidebar.markdown("---")
     st.sidebar.markdown("© 2024 CMDSPACE by Yohan Koo")
