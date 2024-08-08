@@ -39,28 +39,22 @@ custom_css = """
     }
 
     .stApp {
-        transition: all 0.3s ease-in-out;
-    }
-
-    .main .block-container {
         background-color: var(--main-bg);
-        padding: 2rem;
-        border-radius: 10px;
+        color: var(--font-color);
+        transition: all 0.3s ease-in-out;
     }
 
     .stSidebar .sidebar-content {
         background-color: var(--sidebar-bg);
     }
 
-    body {
-        color: var(--font-color);
+    .main .block-container {
         background-color: var(--main-bg);
     }
 
     .nav-link {
         color: var(--font-color) !important;
-        font-size: 1rem !important;
-        transition: all 0.2s ease;
+        background-color: transparent;
     }
 
     .nav-link:hover {
@@ -70,7 +64,6 @@ custom_css = """
     .nav-link.active {
         background-color: var(--selected-color) !important;
         color: var(--main-bg) !important;
-        font-weight: bold !important;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -80,15 +73,6 @@ custom_css = """
     .stButton > button {
         background-color: var(--selected-color);
         color: var(--main-bg);
-        font-size: 1rem;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        border: none;
-        transition: opacity 0.3s ease;
-    }
-
-    .stButton > button:hover {
-        opacity: 0.8;
     }
 
     .stTextInput > div > div > input,
@@ -96,13 +80,7 @@ custom_css = """
     .stTextArea > div > div > textarea {
         background-color: var(--main-bg);
         color: var(--font-color);
-        border-color: var(--selected-color);
-    }
-
-    @media (max-width: 768px) {
-        .main .block-container {
-            padding: 1rem;
-        }
+        border-color: var(--font-color);
     }
 </style>
 """
@@ -156,7 +134,7 @@ def knowledge_management_page(sub_option):
         st.write("지식 관리의 개념과 이론을 여기에 추가하세요.")
     elif sub_option == "도구 소개":
         st.write("지식 관리 도구 소개를 여기에 추가하세요.")
-    elif sub_option == "실践 사례":
+    elif sub_option == "실천 사례":
         st.write("지식 관리 실천 사례를 여기에 추가하세요.")
 
 def cmds_lab_page(sub_option):
@@ -209,8 +187,9 @@ def main():
             }
         )
 
-        # Submenus
-        if selected == "Generative AI":
+    # Submenus
+    if selected == "Generative AI":
+        with st.sidebar:
             ai_option = option_menu(
                 menu_title=None,
                 options=["ChatGPT", "DALL-E", "Midjourney"],
@@ -223,7 +202,9 @@ def main():
                     "nav-link-selected": {"background-color": "transparent"},
                 }
             )
-        elif selected == "Obsidian":
+        generative_ai_page(ai_option)
+    elif selected == "Obsidian":
+        with st.sidebar:
             obsidian_option = option_menu(
                 menu_title=None,
                 options=["기초", "플러그인", "활용 사례"],
@@ -236,7 +217,9 @@ def main():
                     "nav-link-selected": {"background-color": "transparent"},
                 }
             )
-        elif selected == "Research":
+        obsidian_page(obsidian_option)
+    elif selected == "Research":
+        with st.sidebar:
             research_option = option_menu(
                 menu_title=None,
                 options=["방법론", "논문 작성", "데이터 분석"],
@@ -249,10 +232,12 @@ def main():
                     "nav-link-selected": {"background-color": "transparent"},
                 }
             )
-        elif selected == "Knowledge Management":
+        research_page(research_option)
+    elif selected == "Knowledge Management":
+        with st.sidebar:
             km_option = option_menu(
                 menu_title=None,
-                options=["개념 및 이론", "도구 소개", "실践 사례"],
+                options=["개념 및 이론", "도구 소개", "실천 사례"],
                 icons=['book', 'tools', 'check-circle'],
                 default_index=0,
                 styles={
@@ -262,7 +247,9 @@ def main():
                     "nav-link-selected": {"background-color": "transparent"},
                 }
             )
-        elif selected == "CMDS Lab":
+        knowledge_management_page(km_option)
+    elif selected == "CMDS Lab":
+        with st.sidebar:
             lab_option = option_menu(
                 menu_title=None,
                 options=["연구 주제", "팀 소개", "발표자료"],
@@ -275,20 +262,9 @@ def main():
                     "nav-link-selected": {"background-color": "transparent"},
                 }
             )
-
-    # Page routing
-    if selected == "Home":
-        home_page()
-    elif selected == "Generative AI":
-        generative_ai_page(ai_option)
-    elif selected == "Obsidian":
-        obsidian_page(obsidian_option)
-    elif selected == "Research":
-        research_page(research_option)
-    elif selected == "Knowledge Management":
-        knowledge_management_page(km_option)
-    elif selected == "CMDS Lab":
         cmds_lab_page(lab_option)
+    elif selected == "Home":
+        home_page()
     elif selected == "Contact":
         contact_page()
 
